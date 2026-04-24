@@ -1,8 +1,6 @@
 package uk.ac.soton.comp1206;
 
 import javafx.application.Application;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.DoubleBinding;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -41,19 +39,9 @@ public class NoughtsAndCrosses extends Application {
         return "-fx-border-color: " + top + " " + right + " " + bottom + " " + left + ";";
     }
 
-    public void initGridPane(GridPane gridPane, Scene scene) {
+    public void initGridPane(GridPane gridPane, double size) {
         gridPane.setPadding(new Insets(gridPadding));
-
-        DoubleBinding squareSide = Bindings.createDoubleBinding(() -> {
-            return Math.min(scene.getWidth(), scene.getHeight());
-        }, scene.widthProperty(), scene.heightProperty());
-
-        gridPane.minWidthProperty().bind(squareSide);
-        gridPane.minHeightProperty().bind(squareSide);
-        gridPane.prefWidthProperty().bind(squareSide);
-        gridPane.prefHeightProperty().bind(squareSide);
-        gridPane.maxWidthProperty().bind(squareSide);
-        gridPane.maxHeightProperty().bind(squareSide);
+        gridPane.setPrefSize(size, size);
     }
 
     public void setState(Button button, String state) {
@@ -122,27 +110,15 @@ public class NoughtsAndCrosses extends Application {
 
     public void setTurn(int turn) {
         this.turn = turn;
-
     }
 
-    public void initNoughtsAndCrossesGrid(GridPane gridPane) {
-        DoubleBinding buttonSize = Bindings.createDoubleBinding(() -> {
-            return calculateButtonSize(gridPane.getWidth(), gridPane.getHeight(), gridPadding);
-        }, gridPane.widthProperty(), gridPane.heightProperty());
-
+    public void initNoughtsAndCrossesGrid(GridPane gridPane, double buttonSize) {
         for (int y = 0; y < 3; y++) {
             for (int x = 0; x < 3; x++) {
                 var button = new Button();
                 button.addEventHandler(ActionEvent.ACTION, new ButtonClickHandler());
-
-                button.prefWidthProperty().bind(buttonSize);
-                button.prefHeightProperty().bind(buttonSize);
-                button.minWidthProperty().bind(buttonSize);
-                button.minHeightProperty().bind(buttonSize);
-                button.maxWidthProperty().bind(buttonSize);
-                button.maxHeightProperty().bind(buttonSize);
-
-                button.setStyle(button.getStyle() + calculateBorderStyle(x, y));
+                button.setPrefSize(buttonSize, buttonSize);
+                button.setStyle(calculateBorderStyle(x, y));
                 gridPane.add(button, x, y);
             }
         }
@@ -160,10 +136,14 @@ public class NoughtsAndCrosses extends Application {
 
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("styles.css")).toExternalForm());
 
-        initGridPane(gridPane, scene);
-        initNoughtsAndCrossesGrid(gridPane);
+        double squareSide = Math.min(scene.getWidth(), scene.getHeight());
+        double buttonSize = calculateButtonSize(squareSide, squareSide, gridPadding);
+        initGridPane(gridPane, squareSide);
+        initNoughtsAndCrossesGrid(gridPane, buttonSize);
 
         stage.setScene(scene);
+        stage.setResizable(false);
+        stage.setTitle("Naughts and Crosses");
         stage.show();
     }
 
