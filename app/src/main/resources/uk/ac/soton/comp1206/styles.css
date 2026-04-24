@@ -1,7 +1,19 @@
 .root {
-    game-color: rgb(137, 208, 255);
+    game-color: #EE964B;
     border-color: #f8f8f8;
     -fx-background-color: game-color;
+}
+
+.label {
+    -fx-text-fill: #333333;
+    -fx-font-size: 35px;
+    -fx-font-family: "Segoe UI", "Arial Unicode MS", "sans-serif";
+    -fx-font-weight: bold;
+}
+
+.line {
+    -fx-stroke: #F8F8F8;
+    -fx-stroke-width: 8;
 }
 
 .button {
@@ -21,11 +33,11 @@
 }
 
 .state-x {
-    -fx-font-size: 80px;
+    -fx-font-size: 70px;
 }
 
 .state-o {
-    -fx-font-size: 60px;
+    -fx-font-size: 50px;
     -fx-font-weight: bold;
 }
 
