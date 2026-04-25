@@ -7,7 +7,7 @@
 .label {
     -fx-text-fill: #333333;
     -fx-font-size: 35px;
-    -fx-font-family: "Segoe UI", "Arial Unicode MS", "sans-serif";
+    -fx-font-family: "Arial Black";
     -fx-font-weight: bold;
 }
 
@@ -16,12 +16,17 @@
     -fx-stroke-width: 8;
 }
 
+.circle {
+    -fx-stroke: #F8F8F8;
+    -fx-stroke-width: 8;
+    -fx-fill: transparent;
+}
+
 .button {
     -fx-background-color: game-color;
-    -fx-text-fill: white;
+    -fx-text-fill: transparent;
     -fx-border-width: 5 5 5 5;
     -fx-padding: 0;
-    -fx-font-family: "Segoe UI", "Arial Unicode MS", "sans-serif";
 }
 
 .button:hover {
@@ -30,15 +35,6 @@
 
 .button:pressed {
     -fx-background-color: game-color;
-}
-
-.state-x {
-    -fx-font-size: 70px;
-}
-
-.state-o {
-    -fx-font-size: 50px;
-    -fx-font-weight: bold;
 }
 
 .button:focused {

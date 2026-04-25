@@ -1,9 +1,9 @@
 package uk.ac.soton.comp1206;
 
+import static uk.ac.soton.comp1206.Helpers.*;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -13,6 +13,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 
@@ -25,29 +26,15 @@ import java.util.Objects;
 public class NoughtsAndCrosses extends Application {
     private final int gridPadding = 50;
 
-    private final String nought = "⭘";
-    private final String cross = "✕";
+    private final int symbolSize = 20;
 
-    public String[][] grid = new String[3][3];
+    public Character[][] grid = new Character[3][3];
     public Button[][] gridButtons = new Button[3][3];
-    public int turn = 0;
+    public int round = -1;
     public boolean gameOver = false;
 
     public Label bottomLabel;
     public Pane overlayPane;
-
-    public double calculateButtonSize(double width, double height, int padding) {
-        return (Math.min(width, height - 70) - (2 * padding)) / 3;
-    }
-
-    public String calculateBorderStyle(int x, int y) {
-        String top  = y > 0 ? "border-color" : "transparent";
-        String right = x < 2 ? "border-color" : "transparent";
-        String bottom = y < 2 ? "border-color" : "transparent";
-        String left = x > 0 ? "border-color" : "transparent";
-
-        return "-fx-border-color: " + top + " " + right + " " + bottom + " " + left + ";";
-    }
 
     public void initGridPane(GridPane gridPane, double size) {
         gridPane.setAlignment(Pos.TOP_CENTER);
@@ -55,47 +42,44 @@ public class NoughtsAndCrosses extends Application {
         gridPane.setPrefSize(size, size);
     }
 
-    public void setState(Button button, String state) {
+    public void setState(Button button, Character state) {
         int x = GridPane.getColumnIndex(button);
         int y = GridPane.getRowIndex(button);
 
+        double buttonX = getGlobalX(button);
+        double buttonY = getGlobalY(button);
+
         button.getStyleClass().removeAll("state-x", "state-o");
-        if (state.equals(cross)) {
-            button.setText(cross);
-            button.getStyleClass().add("state-x");
+        if (state.equals('x')) {
+            // Text set out of technicality, but set to transparent
+            button.setText(state.toString());
+
+            addLine(buttonX - symbolSize, buttonY - symbolSize, buttonX + symbolSize, buttonY + symbolSize);
+            addLine(buttonX - symbolSize, buttonY + symbolSize, buttonX + symbolSize, buttonY - symbolSize);
+
             grid[x][y] = state;
 
-        } else if (state.equals(nought)) {
-            button.setText(nought);
-            button.getStyleClass().add("state-o");
+        } else if (state.equals('o')) {
+            // Text set out of technicality, but set to transparent
+            button.setText(state.toString());
+
+            addCircle(buttonX, buttonY, symbolSize);
+
             grid[x][y] = state;
         }
     }
 
-    public String getState(Button button) {
+    public Character getState(Button button) {
         int x = GridPane.getColumnIndex(button);
         int y = GridPane.getRowIndex(button);
         return grid[x][y];
-    }
-
-    private int[] compareCells(int x1, int y1, int x2, int y2, int x3, int y3) {
-        String a = grid[x1][y1];
-        String b = grid[x2][y2];
-        String c = grid[x3][y3];
-
-        if (a != null && b != null && c != null) {
-            if (a.equals(b) && b.equals(c)) {
-                return new int[]{x1,y1, x2,y2, x3,y3};
-            }
-        }
-        return null;
     }
 
     public int[] getWinner() {
         int[] comparison;
         // Check rows
         for (int x = 0; x < 3; x++) {
-            comparison = compareCells(x,0, x,1, x,2);
+            comparison = compareCells(grid, x,0, x,1, x,2);
             if (comparison != null) {
                 return comparison;
             }
@@ -103,20 +87,20 @@ public class NoughtsAndCrosses extends Application {
 
         // Check columns
         for (int y = 0; y < 3; y++) {
-            comparison = compareCells(0,y, 1,y, 2,y);
+            comparison = compareCells(grid, 0,y, 1,y, 2,y);
             if (comparison != null) {
                 return comparison;
             }
         }
 
         // Check top to bottom diagonal
-        comparison = compareCells(0,0, 1,1, 2,2);
+        comparison = compareCells(grid, 0,0, 1,1, 2,2);
         if (comparison != null) {
             return comparison;
         }
 
         // Check bottom to top diagonal
-        comparison = compareCells(0,2, 1,1, 2,0);
+        comparison = compareCells(grid, 0,2, 1,1, 2,0);
         if (comparison != null) {
             return comparison;
         }
@@ -124,13 +108,11 @@ public class NoughtsAndCrosses extends Application {
         return null;
     }
 
-    public String turnToSymbol(int turn) {
-        return (turn == 0 ? cross : nought);
-    }
-
-    public void setTurn(int turn) {
-        this.turn = turn;
-        bottomLabel.setText(turnToSymbol(turn) + "'s turn");
+    public void nextRound() {
+        round++;
+        // TODO: Detect when there is a draw (round == 9)
+        // TODO: Add a reset button
+        bottomLabel.setText(roundToSymbol(round) + "'s round");
     }
 
     public double[] extendLine(double x1, double y1, double x2, double y2, int extension) {
@@ -146,6 +128,24 @@ public class NoughtsAndCrosses extends Application {
                 y1 - (dy * extension),
                 x2 + (dx * extension),
                 y2 + (dy * extension)};
+    }
+
+    public Line addLine(double x1, double y1, double x2, double y2) {
+        Line line = new Line(x1, y1, x2, y2);
+        line.getStyleClass().add("line");
+        overlayPane.getChildren().add(line);
+        return line;
+    }
+
+    public Line addLine(double[] coords) {
+        return addLine(coords[0], coords[1], coords[2], coords[3]);
+    }
+
+    public Circle addCircle(double x, double y, double r) {
+        Circle circle = new Circle(x, y, r);
+        circle.getStyleClass().add("circle");
+        overlayPane.getChildren().add(circle);
+        return circle;
     }
 
     public void initNoughtsAndCrossesGrid(GridPane gridPane, double buttonSize) {
@@ -167,7 +167,7 @@ public class NoughtsAndCrosses extends Application {
         GridPane gridPane = new GridPane();
 
         bottomLabel = new Label();
-        setTurn(turn);
+        nextRound();
 
         var root = new VBox(gridPane, bottomLabel);
         overlayPane = new Pane();
@@ -186,7 +186,7 @@ public class NoughtsAndCrosses extends Application {
 
         stage.setScene(scene);
         stage.setResizable(false);
-        stage.setTitle("Naughts and Crosses");
+        stage.setTitle("Noughts and Crosses");
         stage.show();
     }
 
@@ -198,31 +198,32 @@ public class NoughtsAndCrosses extends Application {
             Button button = (Button) actionEvent.getSource();
 
             if (getState(button) == null && !gameOver) {
-                setState(button, turnToSymbol(turn));
-                setTurn((turn + 1) % 2);
+                setState(button, roundToSymbol(round));
 
                 int[] winner = getWinner();
                 if (winner != null) {
                     bottomLabel.setText(grid[winner[0]][winner[1]] + " won!");
 
                     Button fromButton =  gridButtons[winner[0]][winner[1]];
-                    Bounds fromBounds = fromButton.localToScene(fromButton.getBoundsInLocal());
-                    double fromX = fromBounds.getCenterX();
-                    double fromY = fromBounds.getCenterY();
+                    double fromX = getGlobalX(fromButton);
+                    double fromY = getGlobalY(fromButton);
 
                     Button toButton =  gridButtons[winner[4]][winner[5]];
-                    Bounds toBounds = toButton.localToScene(toButton.getBoundsInLocal());
-                    double toX = toBounds.getCenterX();
-                    double toY = toBounds.getCenterY();
+                    double toX = getGlobalX(toButton);
+                    double toY = getGlobalY(toButton);
 
-                    double[] ex = extendLine(fromX, fromY, toX, toY, 50);
-
-                    Line line = new Line(ex[0], ex[1], ex[2], ex[3]);
-                    line.getStyleClass().add("line");
-                    overlayPane.getChildren().add(line);
+                    double[] extendedLine = extendLine(fromX, fromY, toX, toY, 50);
+                    addLine(extendedLine);
 
                     gameOver = true;
                 }
+
+                if (round == 8) {
+                    bottomLabel.setText("It's a draw!");
+                    gameOver = true;
+                }
+
+                nextRound();
             }
         }
     }
