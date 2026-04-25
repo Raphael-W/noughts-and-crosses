@@ -11,10 +11,10 @@ public class Helpers {
     }
 
     static public String calculateBorderStyle(int x, int y) {
-        String top  = y > 0 ? "border-color" : "transparent";
-        String right = x < 2 ? "border-color" : "transparent";
-        String bottom = y < 2 ? "border-color" : "transparent";
-        String left = x > 0 ? "border-color" : "transparent";
+        String top  = y > 0 ? "line-color" : "transparent";
+        String right = x < 2 ? "line-color" : "transparent";
+        String bottom = y < 2 ? "line-color" : "transparent";
+        String left = x > 0 ? "line-color" : "transparent";
 
         return "-fx-border-color: " + top + " " + right + " " + bottom + " " + left + ";";
     }
@@ -44,5 +44,20 @@ public class Helpers {
     static public double getGlobalY(Button button) {
         Bounds toBounds = button.localToScene(button.getBoundsInLocal());
         return toBounds.getCenterY();
+    }
+
+    static public double[] extendLine(double x1, double y1, double x2, double y2, int extension) {
+        double dx = x2 - x1;
+        double dy = y2 - y1;
+        double length = Math.sqrt(dx * dx + dy * dy);
+
+        dx /= length;
+        dy /= length;
+
+        return new double[]{
+                x1 - (dx * extension),
+                y1 - (dy * extension),
+                x2 + (dx * extension),
+                y2 + (dy * extension)};
     }
 }

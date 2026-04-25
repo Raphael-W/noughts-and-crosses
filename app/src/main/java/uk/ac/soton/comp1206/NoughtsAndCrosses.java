@@ -10,6 +10,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -31,10 +32,14 @@ public class NoughtsAndCrosses extends Application {
     public Character[][] grid = new Character[3][3];
     public Button[][] gridButtons = new Button[3][3];
     public int round = -1;
+    public int xWins = 0;
+    public int oWins = 0;
     public boolean gameOver = false;
 
     public Label bottomLabel;
+    public Label scoreLabel;
     public Pane overlayPane;
+    public Button resetButton;
 
     public void initGridPane(GridPane gridPane, double size) {
         gridPane.setAlignment(Pos.TOP_CENTER);
@@ -51,20 +56,13 @@ public class NoughtsAndCrosses extends Application {
 
         button.getStyleClass().removeAll("state-x", "state-o");
         if (state.equals('x')) {
-            // Text set out of technicality, but set to transparent
-            button.setText(state.toString());
-
             addLine(buttonX - symbolSize, buttonY - symbolSize, buttonX + symbolSize, buttonY + symbolSize);
             addLine(buttonX - symbolSize, buttonY + symbolSize, buttonX + symbolSize, buttonY - symbolSize);
 
             grid[x][y] = state;
 
         } else if (state.equals('o')) {
-            // Text set out of technicality, but set to transparent
-            button.setText(state.toString());
-
             addCircle(buttonX, buttonY, symbolSize);
-
             grid[x][y] = state;
         }
     }
@@ -110,24 +108,8 @@ public class NoughtsAndCrosses extends Application {
 
     public void nextRound() {
         round++;
-        // TODO: Detect when there is a draw (round == 9)
         // TODO: Add a reset button
-        bottomLabel.setText(roundToSymbol(round) + "'s round");
-    }
-
-    public double[] extendLine(double x1, double y1, double x2, double y2, int extension) {
-        double dx = x2 - x1;
-        double dy = y2 - y1;
-        double length = Math.sqrt(dx * dx + dy * dy);
-
-        dx /= length;
-        dy /= length;
-
-        return new double[]{
-                x1 - (dx * extension),
-                y1 - (dy * extension),
-                x2 + (dx * extension),
-                y2 + (dy * extension)};
+        bottomLabel.setText(Character.toUpperCase(roundToSymbol(round)) + "'s turn");
     }
 
     public Line addLine(double x1, double y1, double x2, double y2) {
@@ -146,6 +128,20 @@ public class NoughtsAndCrosses extends Application {
         circle.getStyleClass().add("circle");
         overlayPane.getChildren().add(circle);
         return circle;
+    }
+
+    public void updateScoreText() {
+        scoreLabel.setText("X: " + xWins + "       O: " + oWins);
+    }
+
+    public void setWinner(Character winner) {
+        if (winner.equals('x')) {
+            xWins++;
+        }
+        else if (winner.equals('o')) {
+            oWins++;
+        }
+        updateScoreText();
     }
 
     public void initNoughtsAndCrossesGrid(GridPane gridPane, double buttonSize) {
@@ -167,22 +163,39 @@ public class NoughtsAndCrosses extends Application {
         GridPane gridPane = new GridPane();
 
         bottomLabel = new Label();
-        nextRound();
+        scoreLabel = new Label();
+        scoreLabel.getStyleClass().add("score-label");
+        var bottomPane = new VBox(bottomLabel, scoreLabel);
 
-        var root = new VBox(gridPane, bottomLabel);
+        var root = new VBox(gridPane, bottomPane);
+
         overlayPane = new Pane();
         overlayPane.setMouseTransparent(true);
-        var stack = new StackPane(root, overlayPane);
+
+        resetButton = new Button("Reset");
+        resetButton.getStyleClass().add("reset-button");
+        resetButton.addEventHandler(ActionEvent.ACTION, new ButtonClickHandler());
+        var uiPane = new AnchorPane(resetButton);
+        AnchorPane.setTopAnchor(resetButton, 20.0);
+        AnchorPane.setLeftAnchor(resetButton, 20.0);
+        uiPane.setMouseTransparent(false);
+        uiPane.setPickOnBounds(false);
+
+        var stack = new StackPane(root, overlayPane, uiPane);
         var scene = new Scene(stack, 640, 480);
 
-        VBox.setMargin(bottomLabel, new Insets(40));
+        VBox.setMargin(bottomPane, new Insets(20));
         root.setAlignment(Pos.CENTER);
+        bottomPane.setAlignment(Pos.BOTTOM_CENTER);
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("styles.css")).toExternalForm());
 
         double squareSide = Math.min(scene.getWidth(), scene.getHeight());
         double buttonSize = calculateButtonSize(squareSide, squareSide, gridPadding);
         initGridPane(gridPane, squareSide);
         initNoughtsAndCrossesGrid(gridPane, buttonSize);
+
+        nextRound();
+        updateScoreText();
 
         stage.setScene(scene);
         stage.setResizable(false);
@@ -197,33 +210,44 @@ public class NoughtsAndCrosses extends Application {
         public void handle(ActionEvent actionEvent) {
             Button button = (Button) actionEvent.getSource();
 
-            if (getState(button) == null && !gameOver) {
-                setState(button, roundToSymbol(round));
-
-                int[] winner = getWinner();
-                if (winner != null) {
-                    bottomLabel.setText(grid[winner[0]][winner[1]] + " won!");
-
-                    Button fromButton =  gridButtons[winner[0]][winner[1]];
-                    double fromX = getGlobalX(fromButton);
-                    double fromY = getGlobalY(fromButton);
-
-                    Button toButton =  gridButtons[winner[4]][winner[5]];
-                    double toX = getGlobalX(toButton);
-                    double toY = getGlobalY(toButton);
-
-                    double[] extendedLine = extendLine(fromX, fromY, toX, toY, 50);
-                    addLine(extendedLine);
-
-                    gameOver = true;
-                }
-
-                if (round == 8) {
-                    bottomLabel.setText("It's a draw!");
-                    gameOver = true;
-                }
+            if (button == resetButton) {
+                round = -1;
+                gameOver = false;
+                grid = new Character[3][3];
+                overlayPane.getChildren().clear();
 
                 nextRound();
+            }
+            else {
+                if (getState(button) == null && !gameOver) {
+                    setState(button, roundToSymbol(round));
+                    nextRound();
+
+                    if (round == 9) {
+                        bottomLabel.setText("It's a draw!");
+                        gameOver = true;
+                    }
+
+                    int[] winner = getWinner();
+                    if (winner != null) {
+                        Character gameWinner = grid[winner[0]][winner[1]];
+                        bottomLabel.setText(Character.toUpperCase(gameWinner) + " won!");
+                        setWinner(gameWinner);
+
+                        Button fromButton =  gridButtons[winner[0]][winner[1]];
+                        double fromX = getGlobalX(fromButton);
+                        double fromY = getGlobalY(fromButton);
+
+                        Button toButton =  gridButtons[winner[4]][winner[5]];
+                        double toX = getGlobalX(toButton);
+                        double toY = getGlobalY(toButton);
+
+                        double[] extendedLine = extendLine(fromX, fromY, toX, toY, 50);
+                        addLine(extendedLine);
+
+                        gameOver = true;
+                    }
+                }
             }
         }
     }

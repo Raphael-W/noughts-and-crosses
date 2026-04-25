@@ -1,23 +1,31 @@
 .root {
     game-color: #EE964B;
-    border-color: #f8f8f8;
+    line-color: #F8F8F8;
+    accent-color: #422D23;
+    accent-color2: #251d14;
     -fx-background-color: game-color;
 }
 
 .label {
-    -fx-text-fill: #333333;
+    -fx-text-fill: accent-color;
     -fx-font-size: 35px;
     -fx-font-family: "Arial Black";
     -fx-font-weight: bold;
 }
 
+.score-label {
+    -fx-text-fill: accent-color2;
+    -fx-font-size: 20px;
+    -fx-font-weight: normal;
+}
+
 .line {
-    -fx-stroke: #F8F8F8;
+    -fx-stroke: line-color;
     -fx-stroke-width: 8;
 }
 
 .circle {
-    -fx-stroke: #F8F8F8;
+    -fx-stroke: line-color;
     -fx-stroke-width: 8;
     -fx-fill: transparent;
 }
@@ -40,4 +48,19 @@
 .button:focused {
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
+}
+
+.reset-button {
+    -fx-text-fill: accent-color;
+    -fx-font-family: "Arial Black";
+    -fx-font-size: 20px;
+    -fx-border-color: accent-color;
+    -fx-border-width: 4;
+    -fx-border-radius: 3;
+    -fx-padding: 6 12 6 12;
+}
+
+.reset-button:hover {
+    -fx-text-fill: game-color;
+    -fx-background-color: accent-color;
 }
