@@ -56,7 +56,8 @@
     -fx-font-size: 20px;
     -fx-border-color: accent-color;
     -fx-border-width: 4;
-    -fx-border-radius: 3;
+    -fx-border-radius: 6;
+    -fx-background-radius: 8;
     -fx-padding: 6 12 6 12;
 }
 
