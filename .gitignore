@@ -22,3 +22,6 @@ mvn.cmd
 # OS
 .DS_Store
 Thumbs.db
+
+# Claude
+.claude/

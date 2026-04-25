@@ -113,7 +113,7 @@ public class GameBoardUI {
         if (getState(button) == null && board.isGameRunning()) {
             makeMove(button);
 
-            if (board.getRound() == (size * size)) {
+            if (board.getRound() == (size * size) - 1) {
                 onStatusChange.accept("It's a draw!");
                 board.gameOver();
             }
@@ -124,7 +124,7 @@ public class GameBoardUI {
                 updateScoreLabel();
 
                 Button fromButton = getButton(winningMoves[0], winningMoves[1]);
-                Button toButton = getButton(winningMoves[4], winningMoves[5]);
+                Button toButton = getButton(winningMoves[2], winningMoves[3]);
                 drawWinLine(fromButton, toButton);
                 board.gameOver();
             }
@@ -195,8 +195,9 @@ public class GameBoardUI {
         double toX = getGlobalX(to, overlayPane);
         double toY = getGlobalY(to, overlayPane);
 
-        double[] extendedLine = extendLine(fromX, fromY, toX, toY, 50);
-        addLine(extendedLine);
+        double[] extendedLine = extendLine(fromX, fromY, toX, toY, symbolSize * 3);
+        Line line = addLine(extendedLine);
+        line.getStyleClass().add("red");
     }
 
     private String calculateBorderStyle(int x, int y) {

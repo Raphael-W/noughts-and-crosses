@@ -17,7 +17,7 @@ public class Helpers {
         return parent.sceneToLocal(sceneBounds).getCenterY();
     }
 
-    static public double[] extendLine(double x1, double y1, double x2, double y2, int extension) {
+    static public double[] extendLine(double x1, double y1, double x2, double y2, double extension) {
         double dx = x2 - x1;
         double dy = y2 - y1;
         double length = Math.sqrt(dx * dx + dy * dy);

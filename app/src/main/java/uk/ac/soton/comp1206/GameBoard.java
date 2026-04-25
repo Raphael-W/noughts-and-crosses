@@ -91,38 +91,74 @@ public class GameBoard {
         return null;
     }
 
+    private boolean all(Character[] window) {
+        if (window.length == 0) return true;
+        if (window[0] == null) return false;
+
+        for (int i = 1; i < window.length; i++) {
+            if (window[i] == null || !window[0].equals(window[i])) return false;
+        }
+        return true;
+    }
+
     public int[] checkWinner() {
-        int[] comparison;
+        int winLength = size > 4 ? size - 2 : size;
+        int windowCount = (size - winLength) + 1;
+
         // Check rows
-        for (int x = 0; x < size; x++) {
-            comparison = compareCells(x,0, x,1, x,2);
-            if (comparison != null) {
-                setWinner(getState(comparison[0], comparison[1]));
-                return comparison;
+        for (int y = 0; y < size; y++) {
+            for (int startX = 0; startX < windowCount; startX++) {
+                Character[] window = new Character[winLength];
+                for (int x = 0; x < winLength; x++) {
+                    window[x] = getState(x + startX, y);
+                }
+                if (all(window)) {
+                    setWinner(window[0]);
+                    return new int[]{startX,y, startX + winLength - 1,y};
+                }
             }
         }
 
-        // Check columns
-        for (int y = 0; y < size; y++) {
-            comparison = compareCells(0,y, 1,y, 2,y);
-            if (comparison != null) {
-                setWinner(getState(comparison[0], comparison[1]));
-                return comparison;
+        // Check cols
+        for (int x = 0; x < size; x++) {
+            for (int startY = 0; startY < windowCount; startY++) {
+                Character[] window = new Character[winLength];
+                for (int y = 0; y < winLength; y++) {
+                    window[y] = getState(x, y + startY);
+                }
+                if (all(window)) {
+                    setWinner(window[0]);
+                    return new int[]{x, startY, x, startY + winLength - 1};
+                }
             }
         }
 
         // Check top to bottom diagonal
-        comparison = compareCells(0,0, 1,1, 2,2);
-        if (comparison != null) {
-            setWinner(getState(comparison[0], comparison[1]));
-            return comparison;
+        for (int startY = 0; startY < ((size - winLength) + 1); startY++) {
+            for (int startX = 0; startX < windowCount; startX++) {
+                Character[] window = new Character[winLength];
+                for (int xy = 0; xy < winLength; xy++) {
+                    window[xy] = getState(startX + xy, startY + xy);
+                }
+                if (all(window)) {
+                    setWinner(window[0]);
+                    return new int[]{startX,startY, startX + winLength - 1,startY + winLength - 1};
+                }
+            }
         }
 
-        // Check bottom to top diagonal
-        comparison = compareCells(0,2, 1,1, 2,0);
-        if (comparison != null) {
-            setWinner(getState(comparison[0], comparison[1]));
-            return comparison;
+        // Check bottom to left diagonal
+        for (int startY = size - 1; startY >= ((size - winLength) + 1); startY--) {
+            for (int startX = 0; startX < windowCount; startX++) {
+                Character[] window = new Character[winLength];
+                for (int xy = 0; xy < winLength; xy++) {
+                    window[xy] = getState(startX + xy, startY - xy);
+                }
+                if (all(window)) {
+                    setWinner(window[0]);
+                    return new int[]{startX,startY, startX + winLength - 1,startY - winLength + 1};
+                }
+            }
         }
 
         return null;

@@ -24,6 +24,10 @@
     -fx-stroke-width: 8;
 }
 
+.red {
+    -fx-stroke: #E71D36;
+}
+
 .circle {
     -fx-stroke: line-color;
     -fx-stroke-width: 8;
@@ -31,18 +35,17 @@
 }
 
 .button {
-    -fx-background-color: game-color;
-    -fx-text-fill: transparent;
+    -fx-background-color: transparent;
     -fx-border-width: 5 5 5 5;
     -fx-padding: 0;
 }
 
 .button:hover {
-    -fx-background-color: game-color;
+    -fx-background-color: transparent;
 }
 
 .button:pressed {
-    -fx-background-color: game-color;
+    -fx-background-color: transparent;
 }
 
 .button:focused {
