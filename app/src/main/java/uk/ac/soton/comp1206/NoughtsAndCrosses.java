@@ -46,7 +46,10 @@ public class NoughtsAndCrosses extends Application {
 
         resetButton = new Button("Reset");
         resetButton.getStyleClass().add("reset-button");
-        resetButton.setOnAction(e -> gameBoardUI.reset());
+        resetButton.setOnAction(e -> {
+            gameBoardUI.reset();
+            resetButton.setText("Reset");
+        });
 
         var uiPane = new AnchorPane(resetButton);
         AnchorPane.setTopAnchor(resetButton, 20.0);
@@ -62,16 +65,35 @@ public class NoughtsAndCrosses extends Application {
         bottomPane.setAlignment(Pos.BOTTOM_CENTER);
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("styles.css")).toExternalForm());
 
-        gameBoardUI.setOnStatusChange(msg -> bottomLabel.setText(msg));
-        gameBoardUI.setOnScoreChange(msg -> scoreLabel.setText(msg));
+        gameBoardUI.setOnTurnChange(this::setTurnLabel);
+        gameBoardUI.setOnWin(this::setWinLabel);
+        gameBoardUI.setOnDraw(this::setDrawLabel);
 
-        gameBoardUI.setTurnLabel();
-        gameBoardUI.updateScoreLabel();
+        setTurnLabel(gameBoardUI.getPlayer());
+        updateScoreLabel();
 
         stage.setScene(scene);
         stage.setResizable(false);
         stage.setTitle("Noughts and Crosses");
         stage.show();
+    }
+
+    public void setTurnLabel(Character player) {
+        bottomLabel.setText(player + "'s turn");
+    }
+
+    public void setWinLabel(Character player) {
+        bottomLabel.setText(player + " won!");
+        updateScoreLabel();
+        resetButton.setText("Rematch");
+    }
+
+    public void updateScoreLabel() {
+        scoreLabel.setText("X: " + gameBoardUI.getXWins() + "       O: " + gameBoardUI.getOWins());
+    }
+
+    public void setDrawLabel() {
+        bottomLabel.setText("It's a draw!");
     }
 
     public static void main(String[] args) {

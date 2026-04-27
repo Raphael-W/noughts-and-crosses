@@ -25,10 +25,6 @@ public class Helpers {
         dx /= length;
         dy /= length;
 
-        return new double[]{
-                x1 - (dx * extension),
-                y1 - (dy * extension),
-                x2 + (dx * extension),
-                y2 + (dy * extension)};
+        return new double[]{x1 - (dx * extension), y1 - (dy * extension), x2 + (dx * extension), y2 + (dy * extension)};
     }
 }

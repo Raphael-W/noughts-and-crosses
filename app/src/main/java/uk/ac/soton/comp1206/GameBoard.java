@@ -1,5 +1,7 @@
 package uk.ac.soton.comp1206;
 
+import java.util.Optional;
+
 public class GameBoard {
     private int size;
     private Character[][] grid;
@@ -9,7 +11,6 @@ public class GameBoard {
     private int round = 0;
     private int xWins = 0;
     private int oWins = 0;
-    private Character winner;
     private boolean gameOver = false;
 
     public GameBoard(int size) {
@@ -23,10 +24,6 @@ public class GameBoard {
 
     public Character getPlayer() {
         return currentPlayer;
-    }
-
-    public Character getWinner() {
-        return winner;
     }
 
     public int getRound() {
@@ -50,7 +47,6 @@ public class GameBoard {
     }
 
     public void setWinner(Character winner) {
-        this.winner = winner;
         if (winner.equals('X')) {
             xWins++;
         }
@@ -63,7 +59,6 @@ public class GameBoard {
         grid = new Character[size][size];
         currentPlayer = 'X';
         round = 0;
-        winner = null;
         gameOver = false;
     }
 
@@ -78,19 +73,6 @@ public class GameBoard {
         }
     }
 
-    private int[] compareCells(int x1, int y1, int x2, int y2, int x3, int y3) {
-        Character a = grid[x1][y1];
-        Character b = grid[x2][y2];
-        Character c = grid[x3][y3];
-
-        if (a != null && b != null && c != null) {
-            if (a.equals(b) && b.equals(c)) {
-                return new int[]{x1,y1, x2,y2, x3,y3};
-            }
-        }
-        return null;
-    }
-
     private boolean all(Character[] window) {
         if (window.length == 0) return true;
         if (window[0] == null) return false;
@@ -101,34 +83,34 @@ public class GameBoard {
         return true;
     }
 
-    public int[] checkWinner() {
+    public Win checkWinner() {
         int winLength = size > 4 ? size - 2 : size;
         int windowCount = (size - winLength) + 1;
 
         // Check rows
-        for (int y = 0; y < size; y++) {
+        for (int startY = 0; startY < size; startY++) {
             for (int startX = 0; startX < windowCount; startX++) {
                 Character[] window = new Character[winLength];
-                for (int x = 0; x < winLength; x++) {
-                    window[x] = getState(x + startX, y);
+                for (int offset = 0; offset < winLength; offset++) {
+                    window[offset] = getState(startX + offset, startY);
                 }
                 if (all(window)) {
                     setWinner(window[0]);
-                    return new int[]{startX,y, startX + winLength - 1,y};
+                    return createWin(startX, startY, startX + winLength - 1, startY);
                 }
             }
         }
 
         // Check cols
-        for (int x = 0; x < size; x++) {
+        for (int startX = 0; startX < size; startX++) {
             for (int startY = 0; startY < windowCount; startY++) {
                 Character[] window = new Character[winLength];
-                for (int y = 0; y < winLength; y++) {
-                    window[y] = getState(x, y + startY);
+                for (int offset = 0; offset < winLength; offset++) {
+                    window[offset] = getState(startX, offset + startY);
                 }
                 if (all(window)) {
                     setWinner(window[0]);
-                    return new int[]{x, startY, x, startY + winLength - 1};
+                    return createWin(startX, startY, startX, startY + winLength - 1);
                 }
             }
         }
@@ -142,13 +124,13 @@ public class GameBoard {
                 }
                 if (all(window)) {
                     setWinner(window[0]);
-                    return new int[]{startX,startY, startX + winLength - 1,startY + winLength - 1};
+                    return createWin(startX,startY, startX + winLength - 1,startY + winLength - 1);
                 }
             }
         }
 
         // Check bottom to left diagonal
-        for (int startY = size - 1; startY >= ((size - winLength) + 1); startY--) {
+        for (int startY = size - 1; startY >= winLength - 1; startY--) {
             for (int startX = 0; startX < windowCount; startX++) {
                 Character[] window = new Character[winLength];
                 for (int xy = 0; xy < winLength; xy++) {
@@ -156,12 +138,17 @@ public class GameBoard {
                 }
                 if (all(window)) {
                     setWinner(window[0]);
-                    return new int[]{startX,startY, startX + winLength - 1,startY - winLength + 1};
+                    return createWin(startX,startY, startX + winLength - 1,startY - winLength + 1);
                 }
             }
         }
 
         return null;
+    }
+
+    public Win createWin(int fromX, int fromY, int toX, int toY) {
+        Character winner = getState(fromX, fromY);
+        return new Win(winner, new int[]{fromX, fromY}, new int[]{toX, toY});
     }
 
 }

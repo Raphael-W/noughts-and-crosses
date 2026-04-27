@@ -27,8 +27,9 @@ public class GameBoardUI {
     private final Pane overlayPane;
 
     // CONSUMERS
-    private Consumer<String> onStatusChange;
-    private Consumer<String> onScoreChange;
+    private Consumer<Character> onTurnChange;
+    private Consumer<Character> onWin;
+    private Runnable onDraw;
 
     public GameBoardUI(double sideLength, double outerPadding, int size) {
         this.outerPadding = outerPadding;
@@ -65,29 +66,37 @@ public class GameBoardUI {
         return boardButtons[x][y];
     }
 
+    public Button getButton(int[] xy) {
+        return boardButtons[xy[0]][xy[1]];
+    }
+
     public void reset() {
         board.resetBoard();
         overlayPane.getChildren().removeIf(node -> node != boardPane);
     }
 
-    public void setOnStatusChange(Consumer<String> listener) {
-        this.onStatusChange = listener;
+    public void setOnTurnChange(Consumer<Character> listener) {
+        this.onTurnChange = listener;
     }
 
-    public void setOnScoreChange(Consumer<String> listener) {
-        this.onScoreChange = listener;
+    public void setOnWin(Consumer<Character> listener) {
+        this.onWin = listener;
     }
 
-    public void setTurnLabel() {
-        if (onStatusChange != null) {
-            onStatusChange.accept(board.getPlayer() + "'s turn");
-        }
+    public void setOnDraw(Runnable listener) {
+        this.onDraw = listener;
     }
 
-    public void updateScoreLabel() {
-        if (onStatusChange != null) {
-            onScoreChange.accept("X: " + board.getXWins() + "       O: " + board.getOWins());
-        }
+    public Character getPlayer() {
+        return board.getPlayer();
+    }
+
+    public int getXWins() {
+        return board.getXWins();
+    }
+
+    public int getOWins() {
+        return board.getOWins();
     }
 
     private Button[][] initNoughtsAndCrossesGrid() {
@@ -97,7 +106,7 @@ public class GameBoardUI {
         for (int y = 0; y < size; y++) {
             for (int x = 0; x < size; x++) {
                 var button = new Button();
-                button.setOnAction(e -> handleMove(e));
+                button.setOnAction(this::handleMove);
                 button.setPrefSize(buttonSize, buttonSize);
                 button.setStyle(calculateBorderStyle(x, y));
 
@@ -114,24 +123,23 @@ public class GameBoardUI {
             makeMove(button);
 
             if (board.getRound() == (size * size) - 1) {
-                onStatusChange.accept("It's a draw!");
+                onDraw.run();
                 board.gameOver();
             }
 
-            int[] winningMoves = board.checkWinner();
-            if (winningMoves != null) {
-                onStatusChange.accept(board.getWinner() + " won!");
-                updateScoreLabel();
+            Win win = board.checkWinner();
+            if (win != null) {
+                onWin.accept(win.winner());
 
-                Button fromButton = getButton(winningMoves[0], winningMoves[1]);
-                Button toButton = getButton(winningMoves[2], winningMoves[3]);
+                Button fromButton = getButton(win.fromPos());
+                Button toButton = getButton(win.toPos());
                 drawWinLine(fromButton, toButton);
                 board.gameOver();
             }
 
             if (board.isGameRunning()) {
                 board.switchPlayer();
-                setTurnLabel();
+                onTurnChange.accept(board.getPlayer());
             }
         }
     }
