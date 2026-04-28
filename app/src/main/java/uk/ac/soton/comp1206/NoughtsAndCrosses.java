@@ -35,7 +35,7 @@ public class NoughtsAndCrosses extends Application {
 
     @Override
     public void start(Stage stage) {
-        gameBoardUI = new GameBoardUI(getSquareSide(), gridPadding, 6);
+        gameBoardUI = new GameBoardUI(getSquareSide(), gridPadding, 5);
 
         bottomLabel = new Label();
         scoreLabel = new Label();

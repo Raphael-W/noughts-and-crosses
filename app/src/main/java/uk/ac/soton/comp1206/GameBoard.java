@@ -102,7 +102,7 @@ public class GameBoard {
         return x > 0 ? x : -o; // positive = X count, negative = O count
     }
 
-    public State checkWinner(boolean debug) {
+    public State checkWinner() {
         int winLength = size > 4 ? size - 2 : size;
         int windowCount = (size - winLength) + 1;
 
@@ -230,4 +230,17 @@ public class GameBoard {
         return freeMoves.toArray(new Coord[0]);
     }
 
+    @Override
+    public String toString() {
+        String output = "";
+        for (int y = 0; y < size; y++) {
+            for (int x = 0; x < size; x++) {
+                char state = getState(x, y);
+                if (state == EMPTY) state = ' ';
+                output = output + state + " | ";
+            }
+            output = output + "\n";
+        }
+        return output;
+    }
 }

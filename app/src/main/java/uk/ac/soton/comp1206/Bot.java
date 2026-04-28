@@ -31,7 +31,7 @@ public class Bot {
     }
 
     private int calculateOptimalDepth(int availableSquares) {
-        return (int) ((7 * Math.log(16)) / Math.log(availableSquares));
+        return Math.max(5, (int) ((7 * Math.log(16)) / Math.log(availableSquares)));
     }
 
     private int minimax(GameBoard sandboard, int depth) {
@@ -39,9 +39,9 @@ public class Bot {
     }
 
     private int minimax(GameBoard sandBoard, boolean isMaximising, int alpha, int beta, int depth) {
-        State boardState = sandBoard.checkWinner(false);
+        State boardState = sandBoard.checkWinner();
         if (boardState.winner() != EMPTY) {
-            return boardState.winner() == (player) ? 1000 + depth : -(1000 + depth);
+            return boardState.winner() == (player) ? 1000 - depth : -(1000 + depth);
         }
 
         if (sandBoard.getAvailableSquares().length == 0) return 0;

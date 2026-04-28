@@ -132,7 +132,7 @@ public class GameBoardUI {
                 board.gameOver();
             }
 
-            State state = board.checkWinner(true);
+            State state = board.checkWinner();
 
             if (state.winner() != EMPTY) {
                 onWin.accept(state.winner());
