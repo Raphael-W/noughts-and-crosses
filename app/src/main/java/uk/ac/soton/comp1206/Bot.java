@@ -41,11 +41,11 @@ public class Bot {
     private int minimax(GameBoard sandBoard, boolean isMaximising, int alpha, int beta, int depth) {
         State boardState = sandBoard.checkWinner();
         if (boardState.winner() != EMPTY) {
-            return boardState.winner() == (player) ? 1000 - depth : -(1000 + depth);
+            return boardState.winner() == (player) ? 1000 + depth : -(1000 + depth);
         }
 
         if (sandBoard.getAvailableSquares().length == 0) return 0;
-        if (depth == 0) return boardState.oNears() - boardState.xNears();
+        if (depth == 0) return (boardState.oNears() - boardState.xNears());
 
         if (isMaximising) {
             int best = Integer.MIN_VALUE;

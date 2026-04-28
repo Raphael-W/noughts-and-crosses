@@ -22,6 +22,10 @@ public class NoughtsAndCrosses extends Application {
     private final int sceneWidth = 640;
     private final int sceneHeight = 480;
 
+    // VARIABLES
+    int xWins = 0;
+    int oWins = 0;
+
     // ELEMENTS
     public Label bottomLabel;
     public Label scoreLabel;
@@ -35,7 +39,7 @@ public class NoughtsAndCrosses extends Application {
 
     @Override
     public void start(Stage stage) {
-        gameBoardUI = new GameBoardUI(getSquareSide(), gridPadding, 5);
+        gameBoardUI = new GameBoardUI(getSquareSide(), gridPadding, 6);
 
         bottomLabel = new Label();
         scoreLabel = new Label();
@@ -84,12 +88,15 @@ public class NoughtsAndCrosses extends Application {
 
     public void setWinLabel(char player) {
         bottomLabel.setText(player + " won!");
-        updateScoreLabel();
         resetButton.setText("Rematch");
+
+        if (player == 'X') xWins++;
+        else oWins++;
+        updateScoreLabel();
     }
 
     public void updateScoreLabel() {
-        scoreLabel.setText("X: " + gameBoardUI.getXWins() + "       O: " + gameBoardUI.getOWins());
+        scoreLabel.setText("X: " + xWins + "       O: " + oWins);
     }
 
     public void setDrawLabel() {

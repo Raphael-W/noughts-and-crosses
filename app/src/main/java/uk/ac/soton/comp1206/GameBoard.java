@@ -12,8 +12,6 @@ public class GameBoard {
 
     // VARIABLES
     private int round = 0;
-    private int xWins = 0;
-    private int oWins = 0;
     private boolean gameOver = false;
 
     public GameBoard(int size) {
@@ -49,23 +47,6 @@ public class GameBoard {
 
     public void gameOver() {
         gameOver = true;
-    }
-
-    public int getXWins() {
-        return xWins;
-    }
-
-    public int getOWins() {
-        return oWins;
-    }
-
-    public void setWinner(char winner) {
-        if (winner == 'X') {
-            xWins++;
-        }
-        else if (winner == 'O') {
-            oWins++;
-        }
     }
 
     public void resetBoard() {
@@ -130,8 +111,7 @@ public class GameBoard {
                     if (player == 'X') xNearWins++;
                     else oNearWins++;
                 }
-                else if (absCount == winLength) {
-                    setWinner(player);
+                else if (absCount == winLength && winningMove == null) {
                     winningMove = new int[]{startX, startY, startX + winLength - 1, startY};
                 }
             }
@@ -153,8 +133,7 @@ public class GameBoard {
                     if (player == 'X') xNearWins++;
                     else oNearWins++;
                 }
-                else if (absCount == winLength) {
-                    setWinner(player);
+                else if (absCount == winLength && winningMove == null) {
                     winningMove = new int[]{startX, startY, startX, startY + winLength - 1};
                 }
             }
@@ -176,8 +155,7 @@ public class GameBoard {
                     if (player == 'X') xNearWins++;
                     else oNearWins++;
                 }
-                else if (absCount == winLength) {
-                    setWinner(player);
+                else if (absCount == winLength && winningMove == null) {
                     winningMove = new int[]{startX,startY, startX + winLength - 1,startY + winLength - 1};
                 }
             }
@@ -199,8 +177,7 @@ public class GameBoard {
                     if (player == 'X') xNearWins++;
                     else oNearWins++;
                 }
-                else if (absCount == winLength) {
-                    setWinner(player);
+                else if (absCount == winLength && winningMove == null) {
                     winningMove = new int[]{startX,startY, startX + winLength - 1,startY - winLength + 1};
                 }
             }

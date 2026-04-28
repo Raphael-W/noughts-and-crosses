@@ -91,14 +91,6 @@ public class GameBoardUI {
         return board.getPlayer();
     }
 
-    public int getXWins() {
-        return board.getXWins();
-    }
-
-    public int getOWins() {
-        return board.getOWins();
-    }
-
     private Coord getButtonCoord(Button button) {
         int x = GridPane.getColumnIndex(button);
         int y = GridPane.getRowIndex(button);
