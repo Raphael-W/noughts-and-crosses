@@ -119,11 +119,6 @@ public class GameBoardUI {
         if (getState(button) == EMPTY && board.isGameRunning()) {
             makeMove(button);
 
-            if (board.getRound() == (size * size) - 1) {
-                onDraw.run();
-                board.gameOver();
-            }
-
             State state = board.checkWinner();
 
             if (state.winner() != EMPTY) {
@@ -132,6 +127,9 @@ public class GameBoardUI {
                 Button fromButton = getButton(state.fromPos());
                 Button toButton = getButton(state.toPos());
                 drawWinLine(fromButton, toButton);
+                board.gameOver();
+            } else if (board.getRound() == size * size) {
+                onDraw.run();
                 board.gameOver();
             }
 

@@ -14,6 +14,7 @@ public class Bot {
     public Coord getNextMove() {
         Coord bestMove = new Coord(-1, -1);
         int bestScore = Integer.MIN_VALUE;
+        int bestOpponentNears = Integer.MAX_VALUE;
 
         Coord[] availableSquares = board.getAvailableSquares();
         int maxDepth = calculateOptimalDepth(availableSquares.length);
@@ -22,8 +23,12 @@ public class Bot {
             GameBoard sandBoard = new GameBoard(board);
             sandBoard.makeMove(pos);
             int moveScore = minimax(sandBoard, maxDepth);
-            if (moveScore > bestScore) {
+            State postMove = sandBoard.checkWinner();
+            int opponentNears = player == 'O' ? postMove.xNears() : postMove.oNears();
+
+            if (moveScore > bestScore || (moveScore == bestScore && opponentNears < bestOpponentNears)) {
                 bestScore = moveScore;
+                bestOpponentNears = opponentNears;
                 bestMove = pos;
             }
         }
