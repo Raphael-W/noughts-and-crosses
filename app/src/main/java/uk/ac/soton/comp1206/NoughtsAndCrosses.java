@@ -78,11 +78,11 @@ public class NoughtsAndCrosses extends Application {
         stage.show();
     }
 
-    public void setTurnLabel(Character player) {
+    public void setTurnLabel(char player) {
         bottomLabel.setText(player + "'s turn");
     }
 
-    public void setWinLabel(Character player) {
+    public void setWinLabel(char player) {
         bottomLabel.setText(player + " won!");
         updateScoreLabel();
         resetButton.setText("Rematch");
@@ -94,6 +94,8 @@ public class NoughtsAndCrosses extends Application {
 
     public void setDrawLabel() {
         bottomLabel.setText("It's a draw!");
+        resetButton.setText("Rematch");
+
     }
 
     public static void main(String[] args) {

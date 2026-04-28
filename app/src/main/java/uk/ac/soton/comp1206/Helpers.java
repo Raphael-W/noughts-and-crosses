@@ -5,6 +5,8 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 
 public class Helpers {
+    static final char EMPTY = '\0';
+
     private Helpers() {}
 
     static public double getGlobalX(Button button, Pane parent) {

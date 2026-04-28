@@ -1,5 +1,6 @@
 package uk.ac.soton.comp1206;
 
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -15,6 +16,7 @@ import static uk.ac.soton.comp1206.Helpers.*;
 
 public class GameBoardUI {
     private final GameBoard board;
+    private final Bot bot;
     private final double symbolSize;
 
     private final double outerPadding;
@@ -38,6 +40,7 @@ public class GameBoardUI {
         this.symbolSize = calculateButtonSize() * 0.25;
 
         board = new GameBoard(size);
+        bot = new Bot(board, 'O');
         boardPane = createBoardGridPane(sideLength, outerPadding);
         overlayPane = createBoardPane(boardPane);
         boardButtons = initNoughtsAndCrossesGrid();
@@ -48,16 +51,13 @@ public class GameBoardUI {
     }
 
     public void makeMove(Button button) {
-        int x = GridPane.getColumnIndex(button);
-        int y = GridPane.getRowIndex(button);
+        char player = board.getPlayer();
+        board.makeMove(getButtonCoord(button));
 
-        board.makeMove(x, y);
-        Character player = board.getPlayer();
-
-        if (player.equals('X')) {
+        if (player == 'X') {
             drawX(button);
 
-        } else if (player.equals('O')) {
+        } else if (player == 'O') {
             drawO(button);
         }
     }
@@ -66,8 +66,8 @@ public class GameBoardUI {
         return boardButtons[x][y];
     }
 
-    public Button getButton(int[] xy) {
-        return boardButtons[xy[0]][xy[1]];
+    public Button getButton(Coord xy) {
+        return boardButtons[xy.x][xy.y];
     }
 
     public void reset() {
@@ -87,7 +87,7 @@ public class GameBoardUI {
         this.onDraw = listener;
     }
 
-    public Character getPlayer() {
+    public char getPlayer() {
         return board.getPlayer();
     }
 
@@ -97,6 +97,12 @@ public class GameBoardUI {
 
     public int getOWins() {
         return board.getOWins();
+    }
+
+    private Coord getButtonCoord(Button button) {
+        int x = GridPane.getColumnIndex(button);
+        int y = GridPane.getRowIndex(button);
+        return new Coord(x, y);
     }
 
     private Button[][] initNoughtsAndCrossesGrid() {
@@ -117,9 +123,8 @@ public class GameBoardUI {
         return gridButtons;
     }
 
-    private void handleMove(ActionEvent e) {
-        Button button = (Button) e.getSource();
-        if (getState(button) == null && board.isGameRunning()) {
+    private void handleMove(Button button) {
+        if (getState(button) == EMPTY && board.isGameRunning()) {
             makeMove(button);
 
             if (board.getRound() == (size * size) - 1) {
@@ -127,21 +132,39 @@ public class GameBoardUI {
                 board.gameOver();
             }
 
-            Win win = board.checkWinner();
-            if (win != null) {
-                onWin.accept(win.winner());
+            State state = board.checkWinner(true);
 
-                Button fromButton = getButton(win.fromPos());
-                Button toButton = getButton(win.toPos());
+            if (state.winner() != EMPTY) {
+                onWin.accept(state.winner());
+
+                Button fromButton = getButton(state.fromPos());
+                Button toButton = getButton(state.toPos());
                 drawWinLine(fromButton, toButton);
                 board.gameOver();
             }
 
             if (board.isGameRunning()) {
-                board.switchPlayer();
                 onTurnChange.accept(board.getPlayer());
+
+                if (getPlayer() == 'O') {
+                    Task<Coord> task = new Task<>() {
+                        @Override
+                        protected Coord call() {
+                            return bot.getNextMove();
+                        }
+                    };
+                    task.setOnSucceeded(e -> {
+                        handleMove(getButton(task.getValue()));
+                    });
+                    new Thread(task).start();
+                }
             }
         }
+    }
+
+    private void handleMove(ActionEvent e) {
+        Button button = (Button) e.getSource();
+        handleMove(button);
     }
 
     private GridPane createBoardGridPane(double sideLength, double gridPadding) {
@@ -227,7 +250,7 @@ public class GameBoardUI {
         return 8 * Math.sqrt((double) 3 / size);
     }
 
-    private Character getState(Button button) {
+    private char getState(Button button) {
         int x = GridPane.getColumnIndex(button);
         int y = GridPane.getRowIndex(button);
         return board.getState(x, y);
