@@ -1,6 +1,6 @@
-package uk.ac.soton.comp1206;
+package noughtsandcrosses;
 
-import static uk.ac.soton.comp1206.Helpers.*;
+import static noughtsandcrosses.Helpers.*;
 
 public class Bot {
     private GameBoard board;

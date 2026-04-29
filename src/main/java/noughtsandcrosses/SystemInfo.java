@@ -1,4 +1,4 @@
-package uk.ac.soton.comp1206;
+package noughtsandcrosses;
 
 public class SystemInfo {
 

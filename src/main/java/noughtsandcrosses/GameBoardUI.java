@@ -1,4 +1,4 @@
-package uk.ac.soton.comp1206;
+package noughtsandcrosses;
 
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -12,7 +12,7 @@ import javafx.scene.shape.Line;
 
 import java.util.function.Consumer;
 
-import static uk.ac.soton.comp1206.Helpers.*;
+import static noughtsandcrosses.Helpers.*;
 
 public class GameBoardUI {
     private final GameBoard board;

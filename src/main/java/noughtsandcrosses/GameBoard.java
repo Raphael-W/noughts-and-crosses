@@ -1,8 +1,8 @@
-package uk.ac.soton.comp1206;
+package noughtsandcrosses;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import static uk.ac.soton.comp1206.Helpers.*;
+import static noughtsandcrosses.Helpers.*;
 
 
 public class GameBoard {

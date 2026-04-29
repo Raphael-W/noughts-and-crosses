@@ -1,4 +1,4 @@
-package uk.ac.soton.comp1206;
+package noughtsandcrosses;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -39,7 +39,7 @@ public class NoughtsAndCrosses extends Application {
 
     @Override
     public void start(Stage stage) {
-        gameBoardUI = new GameBoardUI(getSquareSide(), gridPadding, 5);
+        gameBoardUI = new GameBoardUI(getSquareSide(), gridPadding, 6);
 
         bottomLabel = new Label();
         scoreLabel = new Label();

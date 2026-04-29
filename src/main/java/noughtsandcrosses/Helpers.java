@@ -1,4 +1,4 @@
-package uk.ac.soton.comp1206;
+package noughtsandcrosses;
 
 import javafx.geometry.Bounds;
 import javafx.scene.control.Button;
