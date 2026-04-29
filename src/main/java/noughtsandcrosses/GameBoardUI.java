@@ -154,8 +154,11 @@ public class GameBoardUI {
     }
 
     private void handleMove(ActionEvent e) {
-        Button button = (Button) e.getSource();
-        handleMove(button);
+        // For now, the AI is always O, so this stops the player from making a move while the AI is thinking
+        if (getPlayer() == 'X') {
+            Button button = (Button) e.getSource();
+            handleMove(button);
+        }
     }
 
     private GridPane createBoardGridPane(double sideLength, double gridPadding) {
