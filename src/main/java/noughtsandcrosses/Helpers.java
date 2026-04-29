@@ -9,16 +9,19 @@ public class Helpers {
 
     private Helpers() {}
 
+    // Takes a JavaFX element and returns it's global (window) X position
     static public double getGlobalX(Button button, Pane parent) {
         Bounds sceneBounds = button.localToScene(button.getBoundsInLocal());
         return parent.sceneToLocal(sceneBounds).getCenterX();
     }
 
+    // Takes a JavaFX element and returns it's global (window) Y position
     static public double getGlobalY(Button button, Pane parent) {
         Bounds sceneBounds = button.localToScene(button.getBoundsInLocal());
         return parent.sceneToLocal(sceneBounds).getCenterY();
     }
 
+    // Used to "extend" a line in both directions by a unit
     static public double[] extendLine(double x1, double y1, double x2, double y2, double extension) {
         double dx = x2 - x1;
         double dy = y2 - y1;

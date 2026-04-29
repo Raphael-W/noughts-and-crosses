@@ -11,6 +11,7 @@ public class Bot {
         this.player = player;
     }
 
+    // Calls the minimax algorithm on each of the available squares to evaluate how 'good' each move would be
     public Coord getNextMove() {
         Coord bestMove = new Coord(-1, -1);
         int bestScore = Integer.MIN_VALUE;
@@ -26,6 +27,7 @@ public class Bot {
             State postMove = sandBoard.checkWinner();
             int opponentNears = player == 'O' ? postMove.xNears() : postMove.oNears();
 
+            // In a guaranteed loss, it still tries to win, rather than giving up
             if (moveScore > bestScore || (moveScore == bestScore && opponentNears < bestOpponentNears)) {
                 bestScore = moveScore;
                 bestOpponentNears = opponentNears;
@@ -35,10 +37,13 @@ public class Bot {
         return bestMove;
     }
 
+    // Calculates the maximum search depth without being toooo slow
     private int calculateOptimalDepth(int availableSquares) {
+        // Uses the idea that at a recursion depth of 7 on a 4x4 grid, it was an acceptable speed
         return Math.max(5, (int) ((7 * Math.log(16)) / Math.log(availableSquares)));
     }
 
+    // Sets default value
     private int minimax(GameBoard sandboard, int depth) {
         return minimax(sandboard, false, Integer.MIN_VALUE, Integer.MAX_VALUE, depth);
     }
@@ -46,11 +51,12 @@ public class Bot {
     private int minimax(GameBoard sandBoard, boolean isMaximising, int alpha, int beta, int depth) {
         State boardState = sandBoard.checkWinner();
         if (boardState.winner() != EMPTY) {
+            // Using the depth as a score encourages faster wins and slower losses
             return boardState.winner() == (player) ? 1000 + depth : -(1000 + depth);
         }
 
         if (sandBoard.getAvailableSquares().length == 0) return 0;
-        if (depth == 0) return (boardState.oNears() - boardState.xNears());
+        if (depth == 0) return (boardState.oNears() - boardState.xNears()); //oNears - xNears is a heuristic to approximate who's winning
 
         if (isMaximising) {
             int best = Integer.MIN_VALUE;

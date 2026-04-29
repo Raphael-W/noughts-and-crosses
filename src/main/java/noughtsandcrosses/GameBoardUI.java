@@ -136,6 +136,7 @@ public class GameBoardUI {
             if (board.isGameRunning()) {
                 onTurnChange.accept(board.getPlayer());
 
+                // For now, the AI is always O (will change)
                 if (getPlayer() == 'O') {
                     Task<Coord> task = new Task<>() {
                         @Override
@@ -221,6 +222,7 @@ public class GameBoardUI {
         line.getStyleClass().add("red");
     }
 
+    // Used to determine what edges of each grid button should have borders
     private String calculateBorderStyle(int x, int y) {
         String top  = y > 0 ? "line-color" : "transparent";
         String right = x < (size - 1) ? "line-color" : "transparent";

@@ -19,6 +19,7 @@ public class GameBoard {
         this.grid = new char[size][size];
     }
 
+    // Used to clone a GameBoard based off of an existing board
     public GameBoard(GameBoard existingBoard) {
         this.size = existingBoard.size;
         this.currentPlayer = existingBoard.currentPlayer == 'X' ? 'X' : 'O';
@@ -73,14 +74,15 @@ public class GameBoard {
         switchPlayer();
     }
 
+    // Returns X count (positive), O count (negative), or 0 if window is mixed
     private int same(char[] window) {
         int x = 0, o = 0;
         for (char c : window) {
             if (c == 'X') x++;
             else if (c == 'O') o++;
         }
-        if (x > 0 && o > 0) return 0; // mixed, no near win
-        return x > 0 ? x : -o; // positive = X count, negative = O count
+        if (x > 0 && o > 0) return 0;
+        return x > 0 ? x : -o;
     }
 
     public State checkWinner() {
@@ -111,7 +113,7 @@ public class GameBoard {
                     if (player == 'X') xNearWins++;
                     else oNearWins++;
                 }
-                else if (absCount == winLength && winningMove == null) {
+                else if (absCount == winLength && winningMove == null) { // win
                     winningMove = new int[]{startX, startY, startX + winLength - 1, startY};
                 }
             }
