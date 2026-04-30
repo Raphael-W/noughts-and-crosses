@@ -27,7 +27,8 @@ public class NoughtsAndCrosses extends Application {
 
     // ELEMENTS
     public Label bottomLabel;
-    public Label scoreLabel;
+    public Label xScoreLabel;
+    public Label oScoreLabel;
     public Button resetButton;
 
     private GameBoardUI gameBoardUI;
@@ -40,10 +41,29 @@ public class NoughtsAndCrosses extends Application {
         gameBoardUI = new GameBoardUI(xPlayer, oPlayer, getSquareSide(), gridPadding, gridSize);
 
         bottomLabel = new Label();
-        scoreLabel = new Label();
-        scoreLabel.getStyleClass().add("score-label");
 
-        var bottomPane = new VBox(bottomLabel, scoreLabel);
+        xScoreLabel = new Label();
+        xScoreLabel.getStyleClass().add("score-label");
+
+        Label xLabel = new Label(xPlayer.getName());
+        xLabel.getStyleClass().add("score-label");
+        xLabel.getStyleClass().add("xPiece");
+        var xLabelPane = new HBox(5, xLabel, xScoreLabel);
+        xLabelPane.setAlignment(Pos.CENTER);
+
+        oScoreLabel = new Label();
+        oScoreLabel.getStyleClass().add("score-label");
+
+        Label oLabel = new Label(oPlayer.getName());
+        oLabel.getStyleClass().add("score-label");
+        oLabel.getStyleClass().add("oPiece");
+        var oLabelPane = new HBox(5, oLabel, oScoreLabel);
+        oLabelPane.setAlignment(Pos.CENTER);
+
+        var scorePane = new HBox(24, xLabelPane, oLabelPane);
+        scorePane.setAlignment(Pos.CENTER);
+
+        var bottomPane = new VBox(bottomLabel, scorePane);
         var root = new VBox(gameBoardUI.getPane(), bottomPane);
 
         resetButton = new Button("Reset");
@@ -182,10 +202,6 @@ public class NoughtsAndCrosses extends Application {
         return scene;
     }
 
-    public void play() {
-
-    }
-
     @Override
     public void start(Stage stage) {
         Scene menuScene = createMenuScene(stage);
@@ -196,9 +212,21 @@ public class NoughtsAndCrosses extends Application {
         stage.show();
     }
 
+    private void resetLabelColour(Label label) {
+        label.getStyleClass().remove("xPiece");
+        label.getStyleClass().remove("oPiece");
+    }
+
+    private void setLabelColor(Label label, Player player) {
+        resetLabelColour(label);
+        if (player.getSymbol() == 'X') label.getStyleClass().add("xPiece");
+        else label.getStyleClass().add("oPiece");
+    }
+
     public void setTurnLabel(Player player) {
         if (player.isAI()) bottomLabel.setText(player.getName() + " is thinking...");
         else bottomLabel.setText(player.getName() + "'s turn");
+        setLabelColor(bottomLabel, player);
     }
 
     public void setWinLabel(Player player) {
@@ -206,15 +234,19 @@ public class NoughtsAndCrosses extends Application {
         resetButton.setText("Rematch");
         player.incWin();
         updateScoreLabel();
+        setLabelColor(bottomLabel, player);
     }
 
     public void updateScoreLabel() {
-        scoreLabel.setText(xPlayer.getName() + ": " + xPlayer.getWins() + "       " + oPlayer.getName() + ": " + oPlayer.getWins());
+        xScoreLabel.setText(": " + xPlayer.getWins());
+        oScoreLabel.setText(": " + oPlayer.getWins());
     }
 
     public void setDrawLabel() {
         bottomLabel.setText("It's a draw!");
         resetButton.setText("Rematch");
+
+        resetLabelColour(bottomLabel);
 
     }
 

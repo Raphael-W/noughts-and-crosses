@@ -1,7 +1,5 @@
 package noughtsandcrosses;
 
-import javafx.concurrent.Task;
-
 import static noughtsandcrosses.Helpers.*;
 
 public class Bot {

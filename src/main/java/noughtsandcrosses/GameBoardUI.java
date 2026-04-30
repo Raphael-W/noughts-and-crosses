@@ -217,15 +217,19 @@ public class GameBoardUI {
         double buttonX = getGlobalX(button, overlayPane);
         double buttonY = getGlobalY(button, overlayPane);
 
-        addLine(buttonX - symbolSize, buttonY - symbolSize, buttonX + symbolSize, buttonY + symbolSize);
-        addLine(buttonX - symbolSize, buttonY + symbolSize, buttonX + symbolSize, buttonY - symbolSize);
+        Line line1 = addLine(buttonX - symbolSize, buttonY - symbolSize, buttonX + symbolSize, buttonY + symbolSize);
+        Line line2 = addLine(buttonX - symbolSize, buttonY + symbolSize, buttonX + symbolSize, buttonY - symbolSize);
+
+        line1.getStyleClass().add("xPiece");
+        line2.getStyleClass().add("xPiece");
     }
 
     private void drawO(Button button) {
         double buttonX = getGlobalX(button, overlayPane);
         double buttonY = getGlobalY(button, overlayPane);
 
-        addCircle(buttonX, buttonY, symbolSize);
+        Circle circle = addCircle(buttonX, buttonY, symbolSize);
+        circle.getStyleClass().add("oPiece");
     }
 
     private Line addLine(double x1, double y1, double x2, double y2) {
@@ -258,7 +262,9 @@ public class GameBoardUI {
 
         double[] extendedLine = extendLine(fromX, fromY, toX, toY, symbolSize * 3);
         Line line = addLine(extendedLine);
-        line.getStyleClass().add("red");
+
+        if (getState(from) == 'X') line.getStyleClass().add("xPiece");
+        else line.getStyleClass().add("oPiece");
     }
 
     // Used to determine what edges of each grid button should have borders

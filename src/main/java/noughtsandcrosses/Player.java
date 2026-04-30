@@ -19,8 +19,11 @@ public class Player {
     }
 
     public String getName() {
-        if (isAI) return "AI (" + symbol + ")";
         return name;
+    }
+
+    public String getNameAndSymbol() {
+        return name + " (" + symbol + ")";
     }
 
     public int getWins() {

@@ -4,6 +4,8 @@
     line-color: #F8F8F8;
     accent-color: #422D23;
     accent-color2: #251d14;
+    x-color: #1a6fb5;
+    o-color: #c0272d;
     -fx-background-color: game-color;
 }
 
@@ -30,14 +32,29 @@
     -fx-stroke-width: 8;
 }
 
-.red {
-    -fx-stroke: #E71D36;
-}
-
 .circle {
     -fx-stroke: line-color;
     -fx-stroke-width: 8;
     -fx-fill: transparent;
+}
+
+.xPiece {
+    -fx-stroke: x-color;
+    -fx-text-fill: x-color;
+}
+
+.oPiece {
+    -fx-stroke: o-color;
+    -fx-text-fill: o-color;
+}
+
+.neutralPiece {
+    -fx-stroke: line-color;
+    -fx-text-fill: accent-color;
+}
+
+.red {
+    -fx-stroke: #E71D36;
 }
 
 .button, .toggle-button {
