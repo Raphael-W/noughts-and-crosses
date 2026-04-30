@@ -1,5 +1,6 @@
 .root {
     game-color: #EE964B;
+    game-color2: #d6853f;
     line-color: #F8F8F8;
     accent-color: #422D23;
     accent-color2: #251d14;
@@ -11,6 +12,11 @@
     -fx-font-size: 35px;
     -fx-font-family: "Arial Black";
     -fx-font-weight: bold;
+}
+
+.subtitle {
+    -fx-font-size: 15px;
+    -fx-font-weight: normal;
 }
 
 .score-label {
@@ -34,27 +40,9 @@
     -fx-fill: transparent;
 }
 
-.button {
-    -fx-background-color: transparent;
-    -fx-border-width: 5 5 5 5;
-    -fx-padding: 0;
-}
-
-.button:hover {
-    -fx-background-color: transparent;
-}
-
-.button:pressed {
-    -fx-background-color: transparent;
-}
-
-.button:focused {
-    -fx-focus-color: transparent;
-    -fx-faint-focus-color: transparent;
-}
-
-.reset-button {
+.button, .toggle-button {
     -fx-text-fill: accent-color;
+    -fx-background-color: transparent;
     -fx-font-family: "Arial Black";
     -fx-font-size: 20px;
     -fx-border-color: accent-color;
@@ -64,7 +52,88 @@
     -fx-padding: 6 12 6 12;
 }
 
-.reset-button:hover {
+.toggle-button {
+    -fx-font-size: 15px !important;
+}
+
+.button.filled, .toggle-button:selected {
     -fx-text-fill: game-color;
     -fx-background-color: accent-color;
+}
+
+.button.filled:hover, .toggle-button:selected:hover {
+    -fx-background-color: accent-color2;
+    -fx-border-color: accent-color2;
+}
+
+.button:hover, .toggle-button:hover {
+    -fx-text-fill: game-color;
+    -fx-background-color: accent-color;
+}
+
+.cell {
+    -fx-background-color: transparent;
+    -fx-border-width: 5 5 5 5;
+    -fx-padding: 0;
+    -fx-border-radius: 0;
+}
+
+.cell:hover {
+    -fx-background-color: transparent;
+}
+
+.cell:pressed {
+    -fx-background-color: transparent;
+}
+
+.cell:focused {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.player-input {
+    -fx-background-color: game-color2;
+    -fx-border-color: accent-color2;
+    -fx-border-width: 4;
+    -fx-border-radius: 6;
+    -fx-background-radius: 8;
+    -fx-padding: 6 12 6 12;
+
+    -fx-text-fill: accent-color2;
+    -fx-prompt-text-fill: accent-color;
+    -fx-font-size: 20px;
+    -fx-font-family: "Arial Black";
+    -fx-font-weight: normal;
+}
+
+/* The outer box */
+.check-box .box {
+    -fx-background-color: game-color2;
+    -fx-border-color: accent-color;
+    -fx-border-radius: 6;
+    -fx-background-radius: 8;
+}
+
+/* When checked */
+.check-box:selected .box {
+    -fx-background-color: accent-color;
+    -fx-border-color: accent-color2;
+}
+
+/* The tick mark */
+.check-box:selected .mark {
+    -fx-background-color: game-color;
+}
+
+/* The label text */
+.check-box {
+    -fx-text-fill: accent-color;
+    -fx-font-size: 15px;
+    -fx-font-family: "Arial Black";
+    -fx-font-weight: normal;
+}
+
+/* Hover */
+.check-box:hover .box {
+    -fx-border-color: accent-color2;
 }

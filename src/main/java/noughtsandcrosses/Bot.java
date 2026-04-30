@@ -1,14 +1,14 @@
 package noughtsandcrosses;
 
+import javafx.concurrent.Task;
+
 import static noughtsandcrosses.Helpers.*;
 
 public class Bot {
     private GameBoard board;
-    private char player;
 
-    public Bot(GameBoard board, char player) {
+    public Bot(GameBoard board) {
         this.board = board;
-        this.player = player;
     }
 
     // Calls the minimax algorithm on each of the available squares to evaluate how 'good' each move would be
@@ -25,7 +25,7 @@ public class Bot {
             sandBoard.makeMove(pos);
             int moveScore = minimax(sandBoard, maxDepth);
             State postMove = sandBoard.checkWinner();
-            int opponentNears = player == 'O' ? postMove.xNears() : postMove.oNears();
+            int opponentNears = board.getPlayer() == 'O' ? postMove.xNears() : postMove.oNears();
 
             // In a guaranteed loss, it still tries to win, rather than giving up
             if (moveScore > bestScore || (moveScore == bestScore && opponentNears < bestOpponentNears)) {
@@ -52,7 +52,7 @@ public class Bot {
         State boardState = sandBoard.checkWinner();
         if (boardState.winner() != EMPTY) {
             // Using the depth as a score encourages faster wins and slower losses
-            return boardState.winner() == (player) ? 1000 + depth : -(1000 + depth);
+            return boardState.winner() == (board.getPlayer()) ? 1000 + depth : -(1000 + depth);
         }
 
         if (sandBoard.getAvailableSquares().length == 0) return 0;

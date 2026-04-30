@@ -10,6 +10,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 
+import java.util.ArrayList;
 import java.util.function.Consumer;
 
 import static noughtsandcrosses.Helpers.*;
@@ -27,37 +28,55 @@ public class GameBoardUI {
     private final Button[][] boardButtons;
     private final GridPane boardPane;
     private final Pane overlayPane;
+    private ArrayList<Task<Coord>> AIMoves = new ArrayList<>();
+
+    // PLAYERS
+    private Player xPlayer;
+    private Player oPlayer;
 
     // CONSUMERS
     private Consumer<Character> onTurnChange;
     private Consumer<Character> onWin;
     private Runnable onDraw;
 
-    public GameBoardUI(double sideLength, double outerPadding, int size) {
+    public GameBoardUI(Player xPlayer, Player oPlayer, double sideLength, double outerPadding, int size) {
+        this.xPlayer = xPlayer;
+        this.oPlayer = oPlayer;
+
         this.outerPadding = outerPadding;
         this.sideLength = sideLength;
         this.size = size;
         this.symbolSize = calculateButtonSize() * 0.25;
 
         board = new GameBoard(size);
-        bot = new Bot(board, 'O');
+        bot = new Bot(board);
         boardPane = createBoardGridPane(sideLength, outerPadding);
         overlayPane = createBoardPane(boardPane);
         boardButtons = initNoughtsAndCrossesGrid();
+    }
+
+    public void start() {
+        if (getPlayer().isAI()) nextAIMove();
     }
 
     public Pane getPane() {
         return overlayPane;
     }
 
-    public void makeMove(Button button) {
+    public Player getPlayer() {
         char player = board.getPlayer();
+        if (player == 'X') return xPlayer;
+        return oPlayer;
+    }
+
+    public void makeMove(Button button) {
+        Player player = getPlayer();
         board.makeMove(getButtonCoord(button));
 
-        if (player == 'X') {
+        if (player.getSymbol() == 'X') {
             drawX(button);
 
-        } else if (player == 'O') {
+        } else if (player.getSymbol() == 'O') {
             drawO(button);
         }
     }
@@ -71,8 +90,11 @@ public class GameBoardUI {
     }
 
     public void reset() {
+        cancelAIMoves();
         board.resetBoard();
         overlayPane.getChildren().removeIf(node -> node != boardPane);
+        onTurnChange.accept(board.getPlayer());
+        start();
     }
 
     public void setOnTurnChange(Consumer<Character> listener) {
@@ -87,10 +109,6 @@ public class GameBoardUI {
         this.onDraw = listener;
     }
 
-    public char getPlayer() {
-        return board.getPlayer();
-    }
-
     private Coord getButtonCoord(Button button) {
         int x = GridPane.getColumnIndex(button);
         int y = GridPane.getRowIndex(button);
@@ -103,16 +121,43 @@ public class GameBoardUI {
 
         for (int y = 0; y < size; y++) {
             for (int x = 0; x < size; x++) {
-                var button = new Button();
-                button.setOnAction(this::handleMove);
-                button.setPrefSize(buttonSize, buttonSize);
-                button.setStyle(calculateBorderStyle(x, y));
+                var cell = new Button();
+                cell.setOnAction(this::handleMove);
+                cell.setPrefSize(buttonSize, buttonSize);
+                cell.getStyleClass().add("cell");
+                cell.setStyle(calculateBorderStyle(x, y));
 
-                gridButtons[x][y] = button;
-                boardPane.add(button, x, y);
+                gridButtons[x][y] = cell;
+                boardPane.add(cell, x, y);
             }
         }
         return gridButtons;
+    }
+
+    private void nextAIMove() {
+        Task<Coord> task = new Task<>() {
+            @Override
+            protected Coord call() {
+                if (board.getAvailableSquares().length == (size * size)) {
+                    return new Coord(size / 2, size / 2);
+                }
+                return bot.getNextMove();
+            }
+        };
+        AIMoves.add(task);
+        task.setOnSucceeded(e -> {
+            if (!task.isCancelled()) {
+                handleMove(getButton(task.getValue()));
+            }
+        });
+        new Thread(task).start();
+    }
+
+    public void cancelAIMoves() {
+        for (Task<Coord> task : AIMoves) {
+            task.cancel();
+        }
+        AIMoves.clear();
     }
 
     private void handleMove(Button button) {
@@ -137,17 +182,8 @@ public class GameBoardUI {
                 onTurnChange.accept(board.getPlayer());
 
                 // For now, the AI is always O (will change)
-                if (getPlayer() == 'O') {
-                    Task<Coord> task = new Task<>() {
-                        @Override
-                        protected Coord call() {
-                            return bot.getNextMove();
-                        }
-                    };
-                    task.setOnSucceeded(e -> {
-                        handleMove(getButton(task.getValue()));
-                    });
-                    new Thread(task).start();
+                if (getPlayer().isAI()) {
+                    nextAIMove();
                 }
             }
         }
@@ -155,7 +191,7 @@ public class GameBoardUI {
 
     private void handleMove(ActionEvent e) {
         // For now, the AI is always O, so this stops the player from making a move while the AI is thinking
-        if (getPlayer() == 'X') {
+        if (!getPlayer().isAI()) {
             Button button = (Button) e.getSource();
             handleMove(button);
         }
