@@ -29,7 +29,7 @@ When the maximum depth is reached before a terminal state, a heuristic is used t
 
 ## Running
 
-Requires Java 21 and Maven.
+Requires Java 21.0.2 and Maven.
 
 ```
 mvn clean javafx:run
