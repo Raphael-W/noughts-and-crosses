@@ -122,6 +122,7 @@ public class NoughtsAndCrosses extends Application {
             if ((char) nameField.getUserData() == 'X') xPlayer.setName(newVal);
             if ((char) nameField.getUserData() == 'O') oPlayer.setName(newVal);
         });
+        nameField.setText(player.getName());
 
         CheckBox aiBox = new CheckBox("AI");
         aiBox.setUserData(player.getSymbol());
@@ -138,6 +139,8 @@ public class NoughtsAndCrosses extends Application {
                 nameField.setText("");
             };
         });
+        aiBox.setSelected(player.isAI());
+        nameField.setDisable(player.isAI());
 
         HBox row = new HBox(10, playerLabel, nameField, aiBox);
         row.setAlignment(Pos.CENTER_LEFT);
@@ -173,7 +176,7 @@ public class NoughtsAndCrosses extends Application {
             btn.setOnAction(e -> gridSize = (int) ((ToggleButton) e.getSource()).getUserData());
             btn.setToggleGroup(sizeGroup);
             btn.setPrefWidth(80);
-            if (i == 3) btn.setSelected(true); // default
+            if (i == gridSize) btn.setSelected(true);
             sizeSelector.getChildren().add(btn);
         }
 
