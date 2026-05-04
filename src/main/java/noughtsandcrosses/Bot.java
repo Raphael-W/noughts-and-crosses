@@ -9,6 +9,17 @@ public class Bot {
         this.board = board;
     }
 
+    public Coord oneAway() {
+        Coord[] availableSquares = board.getAvailableSquares();
+        for (Coord pos : availableSquares) {
+            GameBoard sandBoard = new GameBoard(board);
+            sandBoard.makeMove(pos);
+            char winner = sandBoard.checkWinner().winner();
+            if (winner != EMPTY) return pos;
+        }
+        return null;
+    }
+
     // Calls the minimax algorithm on each of the available squares to evaluate how 'good' each move would be
     public Coord getNextMove() {
         Coord bestMove = new Coord(-1, -1);
@@ -17,6 +28,9 @@ public class Bot {
 
         Coord[] availableSquares = board.getAvailableSquares();
         int maxDepth = calculateOptimalDepth(availableSquares.length);
+
+        Coord oneAwayMove = oneAway();
+        if (oneAwayMove != null) return oneAwayMove;
 
         for (Coord pos : availableSquares) {
             GameBoard sandBoard = new GameBoard(board);
